@@ -6,6 +6,14 @@ Module.register("MMM-stib2", {
 
   requiresVersion: "2.1.0", // Required version of MagicMirror
 
+  /* Maps STIB messages to a font awesome icon id. This icon is shown next to
+     to the relevant waiting time. */
+  symbols: {
+    "TEMPS THÉORIQUE": "clock",
+    "TEMPS INDISP.": "exclamation-circle",
+    "DERNIER PASSAGE": "bus",
+  },
+
   start: function() {
     this.stibData = {};
     this.messages = {};
@@ -17,12 +25,6 @@ Module.register("MMM-stib2", {
     setInterval(() => {
       this.update();
     }, 20000);
-
-    this.symbols = {
-      "TEMPS THÉORIQUE": "clock",
-      "TEMPS INDISP.": "exclamation-circle",
-      "FIN DE SERVICE": "bus",
-    };
   },
 
   update: function() {
@@ -41,14 +43,22 @@ Module.register("MMM-stib2", {
     }
 
     // Wait for all the waiting times requests to be processed, then get the messages.
-    Promise.all(promises)
-      .then(() => {
-        // getLineIds returns lineIds of the loaded data, hence we must wait for the times data to be available
-        const urlMessages = "https://opendata-api.stib-mivb.be/OperationMonitoring/4.0/MessageByLine/" + this.getLineIds().join("%2C");
-        return this.fetch(urlMessages);
-      })
-      .then(response => this.processMessages(response))
-      .then(() => this.updateDom(this.config.animationSpeed));
+    Promise.all(promises).then(() => {
+      // getLineIds returns lineIds of the loaded data, hence we must wait for the times data to be available
+      const urlMessages = "https://opendata-api.stib-mivb.be/OperationMonitoring/4.0/MessageByLine/";
+      const lineIds = this.getLineIds();
+      const promises = [];
+
+      // Batch ids per 10 as we can only request 10 at the time from the API
+      for (let i = 0; i < lineIds.length; i += 10) {
+        const slice = lineIds.slice(i, i + 10).join("%2C");
+        const sliceUrl = urlMessages + slice;
+        promises.push(this.fetch(sliceUrl).then(response => this.processMessages(response)));
+      }
+
+      // Wait for all message requests to be processed.
+      return Promise.all(promises);
+    }).then(() => this.updateDom(this.config.animationSpeed));
   },
 
   fetch: function(url) {

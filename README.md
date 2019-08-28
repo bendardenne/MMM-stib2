@@ -53,10 +53,9 @@ Option     | Description
 
 To create a STIB OpenData token, go to <https://opendata.stib-mivb.be/> and create an account.
 In "My Space", click on "Operation Monitoring", then "Subscribe".
-Then, click regenerate. The token you should use in the configuration of this module is the "Access Token".
+Then, go to "Subscriptions" and generate keys. The token you should use in the configuration of this module is the "Access Token".
 
 ## Ideas / TODO list
 
-- Allow setting more than 10 line ids for message requests.
 - Scroll vertically if too many lines need to be shown (?)
 - Internationalize. Messages are currently hardcoded to French.
