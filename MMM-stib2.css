@@ -59,9 +59,9 @@ div.stib-table {
 }
 
 .stib-stopseparator {
-  grid-column: 1 / -1;
+  grid-column: 2 / -1;
   border-bottom: 1px solid #444;
-  width: 80%;
+  width: 60%;
   height: 1px;
   max-height: 1px;
   margin-bottom: 20px;

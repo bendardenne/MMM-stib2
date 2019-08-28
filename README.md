@@ -46,7 +46,7 @@ See below for details
 Option     | Description
 ---------- | ----------------------------------------------------------------------------------------------------------------
 `apiToken` | _Required_ STIB open data API token. See below for instructions on getting such a token.
-`stops`    | _Required_ Array of stop objects. A stop object has a freetext `name` and an `ìd` property. `id` is an array of ids for bus stops. These id can be found in the `stops.txt` file from the STIB GTFS dataset. Currently, due to a limitation of the STIB open data API, there may be at most 10 IDs in the whole config.
+`stops`    | _Required_ Array of stop objects. A stop object has a freetext `name` and an `ìd` property. `id` is an array of ids for bus stops. These id can be found in the `stops.txt` file from the STIB GTFS dataset.
 
 
 ## STIB OpenData
@@ -57,6 +57,6 @@ Then, click regenerate. The token you should use in the configuration of this mo
 
 ## Ideas / TODO list
 
-- Allow setting more than 10 ids.
+- Allow setting more than 10 line ids for message requests.
 - Scroll vertically if too many lines need to be shown (?)
 - Internationalize. Messages are currently hardcoded to French.
