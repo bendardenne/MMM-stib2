@@ -1,0 +1,161 @@
+/*
+ *
+ * MMM-stib2
+ *
+ * Benoît Dardenne
+ * MIT Licensed.
+ *
+ * Custom here your css module
+ *
+ */
+
+div.stib-table {
+  text-transform: uppercase;
+  font-size: 50%;
+  vertical-align: middle;
+  display: grid;
+  position: relative;
+  grid-gap: 0 20px;
+  grid-template-columns: 2fr 1fr 3fr 1fr 1fr;
+  justify-self: center;
+}
+
+.stib-stopname {
+  grid-column: 1 / span 1;
+  align-self: center;
+}
+
+.stib-linenumber-container {
+  grid-column: 2 / span 1;
+  align-self: center;
+}
+
+.stib-linenumber {
+  text-align: center;
+  border-radius: 5px;
+  font-weight: bold;
+  background-color: #bbb;
+  color: black;
+  display: inline-block;
+  width: 30px;
+}
+
+.stib-linenumber span {
+  display: inline-block;
+  vertical-align: middle;
+  align-self: center;
+}
+
+.stib-linenumber-icon {
+  width: 25px;
+  display: inline-block;
+  padding-bottom: 5px;
+  position: relative;
+}
+
+.stib-routeseparator {
+  grid-column: 1 / -1;
+  min-height: 15px;
+}
+
+.stib-stopseparator {
+  grid-column: 1 / -1;
+  border-bottom: 1px solid #444;
+  width: 80%;
+  height: 1px;
+  max-height: 1px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  justify-self: center;
+  align-self: center;
+}
+
+.stib-route {
+  grid-column: 3 / span 3;
+}
+
+.stib-time-icon {
+  vertical-align: middle;
+  width: 10px;
+
+  /* fixed width so that even if there is no icon, the space is used. This way the numbers and icons align. */
+  display: inline-block;
+  font-size: 90%;
+  padding-left: 3px;
+  padding-bottom: 2px;
+}
+
+.stib-time-icon.fa-slash {
+  color: Tomato;
+}
+
+.stib-message {
+  grid-column: 3 / span 3;
+  justify-self: center;
+  align-self: center;
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  font-size: 95%;
+  line-height: 95%;
+}
+
+.stib-content-fade {
+  animation: fadeContent 20s linear 0s infinite;
+}
+
+.stib-message-fade {
+  animation: fadeMessage 20s linear 0s infinite;
+}
+
+@keyframes fadeContent {
+  0% {
+    opacity: 1;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  30% {
+    opacity: 0;
+  }
+
+  70% {
+    opacity: 0;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeMessage {
+  0% {
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
