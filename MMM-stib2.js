@@ -28,6 +28,7 @@ Module.register("MMM-stib2", {
   },
 
   update: function() {
+    // Clear possible previous data.
     this.stibData = {};
     this.messages = {};
 
@@ -157,7 +158,7 @@ Module.register("MMM-stib2", {
       let stop = this.stibData[stopName];
       let stopSpan = document.createElement("span");
       stopSpan.innerHTML = stopName;
-      stopSpan.classList.add("stib-stopname");
+      stopSpan.classList.add("stib-stopname", "dimmed");
       stopSpan.style.gridRowStart = rowIndex;
       table.appendChild(stopSpan);
 
@@ -185,6 +186,12 @@ Module.register("MMM-stib2", {
         const rowsForLine = Object.keys(stop[line]).length;
         lineDiv.style.gridRow = rowIndex + " / span " + rowsForLine;
         table.appendChild(lineDiv);
+
+        // let gap = document.createElement("span");
+        // gap.classList.add("stib-routeseparator");
+        // gap.style.gridRow = rowIndex + " / span 1";
+        // table.appendChild(gap);
+        // rowIndex++;
 
         for (let route in stop[line]) {
           const routeSpan = document.createElement("span");
@@ -220,8 +227,10 @@ Module.register("MMM-stib2", {
         rowIndex++;
         seen.add(line);
       }
+      table.removeChild(table.lastChild);
+      rowIndex--;
 
-      stopSpan.style.gridRowEnd = rowIndex - 1;
+      stopSpan.style.gridRowEnd = rowIndex;
 
       const gap = document.createElement("span");
       gap.classList.add("stib-stopseparator");
@@ -231,7 +240,6 @@ Module.register("MMM-stib2", {
     }
 
     // FIXME Find a better way to do this :( We don't want the separators after the last row
-    table.removeChild(table.lastChild);
     table.removeChild(table.lastChild);
 
     return table;

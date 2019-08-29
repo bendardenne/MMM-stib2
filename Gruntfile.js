@@ -11,7 +11,7 @@ module.exports = function(grunt) {
     stylelint: {
       simple: {
         options: {
-          configFile: ".stylelintrc"
+          configFile: ".stylelintrc.json"
         },
         src: ["*.css"]
       }

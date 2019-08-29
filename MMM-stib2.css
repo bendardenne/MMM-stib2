@@ -16,13 +16,18 @@ div.stib-table {
   display: grid;
   position: relative;
   grid-gap: 0 20px;
-  grid-template-columns: 2fr 1fr 3fr 1fr 1fr;
+  grid-template-columns: 0.5fr 1fr 3fr 1fr 1fr;
+  grid-auto-rows: 25px;
   justify-self: center;
 }
 
 .stib-stopname {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
   grid-column: 1 / span 1;
   align-self: center;
+  justify-self: right;
+  font-weight: bold;
 }
 
 .stib-linenumber-container {
@@ -64,8 +69,6 @@ div.stib-table {
   width: 60%;
   height: 1px;
   max-height: 1px;
-  margin-bottom: 20px;
-  margin-top: 10px;
   justify-self: center;
   align-self: center;
 }
@@ -74,10 +77,17 @@ div.stib-table {
   grid-column: 3 / span 3;
 }
 
+.stib-routename {
+  align-self: center;
+}
+
+.stib-times {
+  align-self: center;
+}
+
 .stib-time-icon {
   vertical-align: middle;
   width: 10px;
-
   /* fixed width so that even if there is no icon, the space is used. This way the numbers and icons align. */
   display: inline-block;
   font-size: 90%;
@@ -112,23 +122,18 @@ div.stib-table {
   0% {
     opacity: 1;
   }
-
   20% {
     opacity: 1;
   }
-
   30% {
     opacity: 0;
   }
-
   70% {
     opacity: 0;
   }
-
   80% {
     opacity: 1;
   }
-
   100% {
     opacity: 1;
   }
@@ -138,23 +143,18 @@ div.stib-table {
   0% {
     opacity: 0;
   }
-
   20% {
     opacity: 0;
   }
-
   30% {
     opacity: 1;
   }
-
   70% {
     opacity: 1;
   }
-
   80% {
     opacity: 0;
   }
-
   100% {
     opacity: 0;
   }
