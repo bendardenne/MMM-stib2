@@ -12,6 +12,7 @@ Module.register("MMM-stib2", {
     "TEMPS THÉORIQUE": "clock",
     "TEMPS INDISP.": "exclamation-circle",
     "DERNIER PASSAGE": "bus",
+    "VÉHICULE BLOQUÉ": "car-crash",
   },
 
   start: function() {
@@ -109,8 +110,6 @@ Module.register("MMM-stib2", {
         this.stibData[idToName[point.pointId]] = pointData;
       }
     }
-
-    console.log(this.stibData);
   },
 
   processMessages: function(response) {
@@ -124,8 +123,6 @@ Module.register("MMM-stib2", {
       var current = filtered[i];
       current.lines.forEach(line => this.messages[line.id] = current.content);
     }
-
-    // console.log(this.messages);
   },
 
   getDom: function() {
@@ -186,12 +183,6 @@ Module.register("MMM-stib2", {
         const rowsForLine = Object.keys(stop[line]).length;
         lineDiv.style.gridRow = rowIndex + " / span " + rowsForLine;
         table.appendChild(lineDiv);
-
-        // let gap = document.createElement("span");
-        // gap.classList.add("stib-routeseparator");
-        // gap.style.gridRow = rowIndex + " / span 1";
-        // table.appendChild(gap);
-        // rowIndex++;
 
         for (let route in stop[line]) {
           const routeSpan = document.createElement("span");

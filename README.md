@@ -12,6 +12,12 @@ It relies on the STIB OpenData API: <https://opendata.stib-mivb.be> . It require
 
 I wrote this module for my own usage, and it comes with no guarantee. However, I'm not opposed to fixing (small) issues or merging pull requests.
 
+## Known issue
+
+There seems to be a problem with the STIB server related to HTTP2 which prevent CORS pre-flight requests from succeding when HTTP2 is used. When using chromium, use the `--disable-http2` flag to workaround the problem.
+
+If the issue persists, we could make the requests in the node helper to bypass CORS.
+
 ## Using the module
 
 To use this module, add the following configuration block to the modules array in the `config/config.js` file:
@@ -32,12 +38,12 @@ var config = {
             id: ["1280", "1354", "3508", "3572"]
           }]
         }
-        }
+      }
     ]
 }
 ```
 
-See below for details
+See below for details.
 
 
 
