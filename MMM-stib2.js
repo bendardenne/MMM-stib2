@@ -18,14 +18,21 @@ Module.register("MMM-stib2", {
   start: function() {
     this.stibData = {};
     this.messages = {};
+    this.colors = {};
+    this.fetchColors()
+      .then(() => this.update())
+      .then(() => {
+        // Schedule updates
+        setInterval(() => {
+          this.update();
+        }, 20000);
+      });
+  },
 
-    // Start an update now.
-    this.update();
-
-    // Schedule updates
-    setInterval(() => {
-      this.update();
-    }, 20000);
+  fetchColors: function() {
+    return fetch("modules/MMM-stib2/colors.json")
+      .then(r => r.json())
+      .then(colors => this.colors = colors);
   },
 
   update: function() {
@@ -172,6 +179,8 @@ Module.register("MMM-stib2", {
         const lineSpan = document.createElement("span");
         lineSpan.innerHTML = line;
         lineSpan.classList.add("stib-linenumber");
+        console.log(this.colors[line].COLOR_HEX);
+        lineSpan.style.backgroundColor = this.colors[line].COLOR_HEX || "#bbb";
         lineDiv.classList.add("stib-linenumber-container");
 
         const icon = document.createElement("span");
