@@ -324,7 +324,6 @@ Module.register("MMM-stib2", {
   getTranslations: function() {
     return {
       en: "translations/en.json",
-      fr: "translations/fr.json",
     };
   }
 });

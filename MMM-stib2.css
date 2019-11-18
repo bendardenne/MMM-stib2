@@ -11,11 +11,11 @@
 
 div.stib-table {
   text-transform: uppercase;
-  font-size: 50%;
+  font-size: 60%;
   vertical-align: middle;
   display: grid;
   position: relative;
-  grid-gap: 0 20px;
+  grid-gap: 0 30px;
   grid-template-columns: 0.5fr 1fr 3fr 1fr 1fr;
   grid-auto-rows: 25px;
   justify-self: center;
@@ -42,7 +42,7 @@ div.stib-table {
   background-color: #bbb;
   color: black;
   display: inline-block;
-  width: 30px;
+  width: 35px;
 }
 
 .stib-linenumber span {
@@ -52,7 +52,7 @@ div.stib-table {
 }
 
 .stib-linenumber-icon {
-  width: 25px;
+  width: 30px;
   display: inline-block;
   padding-bottom: 5px;
   position: relative;
