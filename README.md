@@ -6,6 +6,8 @@ This module shows waiting times for STIB transport (Brussels). It is a re-write 
 
 This module will group stops and will only a single bus (or tram, metro) route once. I.e. the same line will not show in multiple stops. This reduces noise if you want to configure the module to show multiple stops that belong to the same line (but have overall different sets of lines.)
 
+![Example screenshot](https://raw.githubusercontent.com/bendardenne/MMM-stib2/master/img/screenshot.png)
+
 The module also queries the STIB messages API for disruptions and shows such disruptions. It also shows icons when the actual waiting time is unknown (only theoretical time is available), the vehicle is blocked or the vehicle is the last of the day (end of service).
 
 It relies on the STIB OpenData API: <https://opendata.stib-mivb.be> . It requires an access token that can be obtained for free.
