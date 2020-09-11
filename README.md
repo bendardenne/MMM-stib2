@@ -62,6 +62,7 @@ Option     | Description
 To create a STIB OpenData token, go to <https://opendata.stib-mivb.be/> and create an account.
 In "My Space", click on "Operation Monitoring", then "Subscribe".
 Then, go to "Subscriptions" and generate keys. The token you should use in the configuration of this module is the "Access Token".
+Use -1 to specify an API token that never expires.
 
 ## Ideas / TODO list
 
