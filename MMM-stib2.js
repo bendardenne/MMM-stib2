@@ -36,47 +36,18 @@ Module.register("MMM-stib2", {
   },
 
   update: function() {
-    // Clear possible previous data.
-    this.stibData = {};
-    this.messages = {};
-
-    const urlTimes = "https://opendata-api.stib-mivb.be/OperationMonitoring/4.0/PassingTimeByPoint/";
+    let urlTimes = "https://data.stib-mivb.be/api/explore/v2.1/catalog/datasets/waiting-time-rt-production/records?where=";
     const ids = this.getIds();
     const promises = [];
 
-    // Batch ids per 10 as we can only request 10 at the time from the API
-    for (let i = 0; i < ids.length; i += 10) {
-      const slice = ids.slice(i, i + 10).join("%2C");
-      const sliceUrl = urlTimes + slice;
-      promises.push(this.fetch(sliceUrl).then(response => this.processData(response)));
-    }
+    urlTimes += encodeURIComponent( "pointid IN (" + ids.map(a => '"' + a + '"' ).join(",") + ")" )
+    this.fetch(urlTimes).then(response => this.processData(response)).then(() => this.updateDom(this.config.animationSpeed));
 
-    // Wait for all the waiting times requests to be processed, then get the messages.
-    Promise.all(promises).then(() => {
-      // getLineIds returns lineIds of the loaded data, hence we must wait for the times data to be available
-      const urlMessages = "https://opendata-api.stib-mivb.be/OperationMonitoring/4.0/MessageByLine/";
-      const lineIds = this.getLineIds();
-      const promises = [];
-
-      // Batch ids per 10 as we can only request 10 at the time from the API
-      for (let i = 0; i < lineIds.length; i += 10) {
-        const slice = lineIds.slice(i, i + 10).join("%2C");
-        const sliceUrl = urlMessages + slice;
-        promises.push(this.fetch(sliceUrl).then(response => this.processMessages(response)));
-      }
-
-      // Wait for all message requests to be processed.
-      return Promise.all(promises);
-    }).then(() => this.updateDom(this.config.animationSpeed));
+    // TODO  fetch traveller info
   },
 
   fetch: function(url) {
-    return fetch(url, {
-      headers: {
-        Accept: "application/json",
-        Authorization: "Bearer " + this.config.apiToken,
-      },
-    }).then(this.handleErrors).then(r => r.json()).catch(console.error);
+    return fetch(url).then(this.handleErrors).then(r => r.json()).catch(console.error);
     //Not sure the error handling is ideal here
   },
 
@@ -95,12 +66,15 @@ Module.register("MMM-stib2", {
       }
     }
 
-    for (var i = 0; i < response.points.length; i++) {
-      var point = response.points[i];
+    this.stibData = {};
 
-      for (var j = 0; j < point.passingTimes.length; j++) {
-        var passage = point.passingTimes[j];
-        var pointData = this.stibData[idToName[point.pointId]] || {};
+    for (var i = 0; i < response.results.length; i++) {
+      var point = response.results[i];
+      point.passingtimes = JSON.parse(point.passingtimes);
+
+      for (var j = 0; j < point.passingtimes.length; j++) {
+        var passage = point.passingtimes[j];
+        var pointData = this.stibData[idToName[point.pointid]] || {};
         var lineData = pointData[passage.lineId] || {};
         if (!passage.destination) {
           continue;
@@ -114,7 +88,7 @@ Module.register("MMM-stib2", {
 
         lineData[passage.destination.fr] = routeData;
         pointData[passage.lineId] = lineData;
-        this.stibData[idToName[point.pointId]] = pointData;
+        this.stibData[idToName[point.pointid]] = pointData;
       }
     }
   },
