@@ -36,7 +36,7 @@ Module.register("MMM-stib2", {
   },
 
   update: function() {
-    let urlTimes = "https://data.stib-mivb.be/api/explore/v2.1/catalog/datasets/waiting-time-rt-production/records?where=";
+    let urlTimes = `https://data.stib-mivb.be/api/explore/v2.1/catalog/datasets/waiting-time-rt-production/records?apikey=${this.config.apiToken}&where=`;
     const ids = this.getIds();
     const promises = [];
 
