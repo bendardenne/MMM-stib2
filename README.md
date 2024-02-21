@@ -32,7 +32,7 @@ var config = {
         position: "bottom_right",
         config: {
           apiToken: "STIB OPEN DATA API TOKEN",
-          DisplayArrivalTime: true,
+          DisplayArrivalTime: "both",
           timeFormat: "12h",
           pollInterval: "20000",
           stops: [{
@@ -57,7 +57,7 @@ See below for details.
 Option     | Description
 ---------- | ----------------------------------------------------------------------------------------------------------------
 `apiToken` | _Required_ STIB opendata API key. See below for instructions on getting your API key .
-`DisplayArrivalTime` | _Default is true_ Display actual time of arrival (HH:MM) beside waiting time.
+`DisplayArrivalTime` | _Default is both_ Display actual time of arrival. It can replace waiting time or be displayed beside it.
 `timeFormat` | _Default is 24h_ Use 12h or 24h format.
 `pollInterval` | _Default is 20000_ Time between API Queries in milliseconds. Data are updated by STIB every 20 seconds - don't use values under 20000. 
 `stops`    | _Required_ Array of stop objects. A stop object has a freetext `name` and an `ìd` property. `id` is an array of ids for bus stops. These ids can be found in the `stops.txt` file from the STIB GTFS dataset -> <https://stibmivb.opendatasoft.com/explore/dataset/gtfs-files-production/table/>.
