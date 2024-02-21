@@ -223,14 +223,19 @@ Module.register("MMM-stib2", {
   },
 
   getTimeDiv: function(passage, currentTime) {
-   const passageDiv = document.createElement("div");
-   const passageTime = document.createElement("span");
+    const passageDiv = document.createElement("div");
+    const passageTime = document.createElement("span");
 
-   if (this.config.DisplayArrivalTime) {
-     let timeString = this.getTimeString(passage, this.config.timeFormat);
-     passageTime.innerHTML = timeString;
-   } else {
-  // If DisplayArrivalTime is false, display waiting time only
+    // Display waiting time, arrival time, or both
+    // Maybe a switch would be more efficient than this if cycle???
+    if (this.config.DisplayArrivalTime === "true" || this.config.DisplayArrivalTime === "both") {
+    let timeString = this.getTimeString(passage, this.config.timeFormat);
+    // both is the new default value
+    if (this.config.DisplayArrivalTime === "both") {
+      timeString += " (in " + this.getTime(currentTime, passage) + "min)";
+    }
+    passageTime.innerHTML = timeString;
+  } else if (this.config.DisplayArrivalTime === "false") {
     passageTime.innerHTML = this.getTime(currentTime, passage);
   }
 
@@ -240,32 +245,32 @@ Module.register("MMM-stib2", {
   const icon = document.createElement("span");
   icon.classList.add("fas", "stib-time-icon");
   passageDiv.appendChild(icon);
- 
-     if (passage && passage.message) {
-         const text = passage.message.fr;
-         const symbol = this.symbols[text];
-         if (!symbol) {
-             console.log(text);
-         } else {
-             // Special case where we need to stack two icons
-             if (symbol === "bus") {
-                 icon.classList.add("fa-stack");
-                 const bus = document.createElement("span");
-                 bus.classList.add("fas", "fa-bus", "fa-stack-1x", "stib-time-icon");
- 
-                 const slash = document.createElement("span");
-                 slash.classList.add("fas", "fa-slash", "fa-stack-1x", "stib-time-icon");
- 
-                 icon.appendChild(bus);
-                 icon.appendChild(slash);
-             } else {
-                 icon.classList.add("fa-" + symbol);
-             }
-         }
-     }
- 
-     return passageDiv;
- },
+
+  if (passage && passage.message) {
+    const text = passage.message.fr;
+    const symbol = this.symbols[text];
+    if (!symbol) {
+      console.log(text);
+    } else {
+      // Special case where we need to stack two icons
+      if (symbol === "bus") {
+        icon.classList.add("fa-stack");
+        const bus = document.createElement("span");
+        bus.classList.add("fas", "fa-bus", "fa-stack-1x", "stib-time-icon");
+
+        const slash = document.createElement("span");
+        slash.classList.add("fas", "fa-slash", "fa-stack-1x", "stib-time-icon");
+
+        icon.appendChild(bus);
+        icon.appendChild(slash);
+      } else {
+        icon.classList.add("fa-" + symbol);
+      }
+    }
+  }
+
+  return passageDiv;
+},
 
   formatArrivalTime: function(isoString) {
     if (!isoString) return "";
