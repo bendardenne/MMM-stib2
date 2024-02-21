@@ -3,7 +3,7 @@ Module.register("MMM-stib2", {
     pollInterval: "20000",
     apiToken: "",
     stops: [],
-    DisplayArrivalTime: true, // Display actual arrival time beside waiting time
+    DisplayArrivalTime: "both", // Display actual arrival time beside waiting time
     timeFormat: "24h"
   },
 
@@ -25,7 +25,21 @@ Module.register("MMM-stib2", {
     this.fetchColors()
       .then(() => this.update())
       .then(() => {
-        // Schedule updates
+	// Convert pollInterval to a number if it's a string representation of a number
+	// and ensure it falls within the 20000 to 60000 range to avoid issues with the API.
+	// If not, set it to the default value (20000).
+	let validatedPollInterval = parseInt(this.config.pollInterval, 10);
+
+	// Check if the conversion result is NaN or if the value is out of the desired range
+	if (isNaN(validatedPollInterval) || validatedPollInterval < 20000 || validatedPollInterval > 60000) {
+	  validatedPollInterval = 20000; // Set to default value if out of range or not a valid number
+	  console.log("Invalid or out-of-range pollInterval configuration detected. Resetting to default (20000 ms).");
+	}
+
+	// Now we can safely populate pollInterval with the desired value
+	this.config.pollInterval = validatedPollInterval;
+
+	// Schedule updates
         setInterval(() => {
           this.update();
         }, this.config.pollInterval);
@@ -229,12 +243,18 @@ Module.register("MMM-stib2", {
     // Display waiting time, arrival time, or both
     // Maybe a switch would be more efficient than this if cycle???
     if (this.config.DisplayArrivalTime === "true" || this.config.DisplayArrivalTime === "both") {
-    let timeString = this.getTimeString(passage, this.config.timeFormat);
-    // both is the new default value
-    if (this.config.DisplayArrivalTime === "both") {
-      timeString += " (in " + this.getTime(currentTime, passage) + "min)";
+        let timeString = this.getTimeString(passage, this.config.timeFormat);
+        // both is the new default value
+        if (this.config.DisplayArrivalTime === "both") {
+            let waitingTime = this.getTime(currentTime, passage);
+            // Convert waitingTime to a string if it's not - to be able to trim it.
+            waitingTime = String(waitingTime).trim();
+        if (waitingTime !== "") {
+            timeString += " (in " + waitingTime + " min)";
+        }
     }
-    passageTime.innerHTML = timeString;
+
+        passageTime.innerHTML = timeString;
   } else if (this.config.DisplayArrivalTime === "false") {
     passageTime.innerHTML = this.getTime(currentTime, passage);
   }
