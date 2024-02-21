@@ -32,6 +32,9 @@ var config = {
         position: "bottom_right",
         config: {
           apiToken: "STIB OPEN DATA API TOKEN",
+          DisplayArrivalTime: true,
+          timeFormat: "12h",
+          pollInterval: "20000",
           stops: [{
             name: "Delta",
             id: ["3546", "3520"]
@@ -53,16 +56,18 @@ See below for details.
 
 Option     | Description
 ---------- | ----------------------------------------------------------------------------------------------------------------
-`apiToken` | _Required_ STIB open data API token. See below for instructions on getting such a token.
-`stops`    | _Required_ Array of stop objects. A stop object has a freetext `name` and an `ìd` property. `id` is an array of ids for bus stops. These id can be found in the `stops.txt` file from the STIB GTFS dataset.
+`apiToken` | _Required_ STIB opendata API key. See below for instructions on getting your API key .
+`DisplayArrivalTime` | _Default is true_ Display actual time of arrival (HH:MM) beside waiting time.
+`timeFormat` | _Default is 24h_ Use 12h or 24h format.
+`pollInterval` | _Default is 20000_ Time between API Queries in milliseconds. Data are updated by STIB every 20 seconds - don't use values under 20000. 
+`stops`    | _Required_ Array of stop objects. A stop object has a freetext `name` and an `ìd` property. `id` is an array of ids for bus stops. These ids can be found in the `stops.txt` file from the STIB GTFS dataset -> <https://stibmivb.opendatasoft.com/explore/dataset/gtfs-files-production/table/>.
 
 
 ## STIB OpenData
 
-To create a STIB OpenData token, go to <https://opendata.stib-mivb.be/> and create an account.
-In "My Space", click on "Operation Monitoring", then "Subscribe".
-Then, go to "Subscriptions" and generate keys. The token you should use in the configuration of this module is the "Access Token".
-Use -1 to specify an API token that never expires.
+To create a STIB OpenData API key, go to <https://stibmivb.opendatasoft.com/> and create a free account.
+Oncel logged in, click on your name in the top right corner of the page and then "API Keys" to generate a new key. Copy the Key value in the configuration of this module as "apiToken".
+The module can actually be used without an API key, but the STIB API limits anonymous users to 100 queries per day, so the use of an API key is necessary for production use.
 
 ## Ideas / TODO list
 
