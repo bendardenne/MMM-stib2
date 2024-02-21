@@ -1,7 +1,10 @@
 Module.register("MMM-stib2", {
   defaults: {
+    pollInterval: "20000",
     apiToken: "",
-    stops: []
+    stops: [],
+    DisplayArrivalTime: true, // Display actual arrival time beside waiting time
+    timeFormat: "24h"
   },
 
   requiresVersion: "2.1.0", // Required version of MagicMirror
@@ -25,7 +28,7 @@ Module.register("MMM-stib2", {
         // Schedule updates
         setInterval(() => {
           this.update();
-        }, 20000);
+        }, this.config.pollInterval);
       });
   },
 
@@ -220,42 +223,80 @@ Module.register("MMM-stib2", {
   },
 
   getTimeDiv: function(passage, currentTime) {
-    const passageDiv = document.createElement("div");
-    const passageTime = document.createElement("span");
+   const passageDiv = document.createElement("div");
+   const passageTime = document.createElement("span");
+
+   if (this.config.DisplayArrivalTime) {
+     let timeString = this.getTimeString(passage, this.config.timeFormat);
+     passageTime.innerHTML = timeString;
+   } else {
+  // If DisplayArrivalTime is false, display waiting time only
     passageTime.innerHTML = this.getTime(currentTime, passage);
-    passageDiv.classList.add("stib-times");
-    passageDiv.appendChild(passageTime);
+  }
 
-    const icon = document.createElement("span");
-    icon.classList.add("fas", "stib-time-icon");
-    passageDiv.appendChild(icon);
+  passageDiv.classList.add("stib-times");
+  passageDiv.appendChild(passageTime);
 
-    if (passage && passage.message) {
-      const text = passage.message.fr;
-      const symbol = this.symbols[text];
-      if (!symbol) {
-        console.log(text);
-      } else {
-        // Special case where we need to stack two icons
-        if (symbol === "bus") {
-          icon.classList.add("fa-stack");
-          const bus = document.createElement("span");
-          bus.classList.add("fas", "fa-bus", "fa-stack-1x", "stib-time-icon");
+  const icon = document.createElement("span");
+  icon.classList.add("fas", "stib-time-icon");
+  passageDiv.appendChild(icon);
+ 
+     if (passage && passage.message) {
+         const text = passage.message.fr;
+         const symbol = this.symbols[text];
+         if (!symbol) {
+             console.log(text);
+         } else {
+             // Special case where we need to stack two icons
+             if (symbol === "bus") {
+                 icon.classList.add("fa-stack");
+                 const bus = document.createElement("span");
+                 bus.classList.add("fas", "fa-bus", "fa-stack-1x", "stib-time-icon");
+ 
+                 const slash = document.createElement("span");
+                 slash.classList.add("fas", "fa-slash", "fa-stack-1x", "stib-time-icon");
+ 
+                 icon.appendChild(bus);
+                 icon.appendChild(slash);
+             } else {
+                 icon.classList.add("fa-" + symbol);
+             }
+         }
+     }
+ 
+     return passageDiv;
+ },
 
-          const slash = document.createElement("span");
-          slash.classList.add("fas", "fa-slash", "fa-stack-1x", "stib-time-icon");
-
-          icon.appendChild(bus);
-          icon.appendChild(slash);
-        } else {
-          icon.classList.add("fa-" + symbol);
-        }
-      }
-    }
-
-    return passageDiv;
+  formatArrivalTime: function(isoString) {
+    if (!isoString) return "";
+    const arrivalDate = new Date(isoString);
+    const hours = arrivalDate.getHours().toString().padStart(2, '0');
+    const minutes = arrivalDate.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
   },
-
+ 
+  getTimeString: function(passage, format) {
+    if (!passage || !passage.time) {
+      return " "; // Return an empty string if passage time is undefined
+    }
+ 
+    const arrivalTime = new Date(passage.time);
+    let hours = arrivalTime.getHours();
+    let minutes = arrivalTime.getMinutes();
+ 
+    if (format === "12h") {
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // Translate '0' to '12'
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      return hours + ':' + minutes + ' ' + ampm;
+    } else {
+      // 24h format is the default
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      return hours + ':' + minutes;
+    }
+  },
+  
   getMessage: function(message, from, upTo) {
     const showMessage = false;
     const messageSpan = document.createElement("span");
