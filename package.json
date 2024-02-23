@@ -5,6 +5,12 @@
   "main": "MMM-stib2.js",
   "author": "Benoît Dardenne",
   "license": "MIT",
+  "keywords": [
+    "MagicMirror",
+    "STIB",
+    "Brussels",
+    "public transport"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/bendardenne/MMM-stib2/"
