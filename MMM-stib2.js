@@ -1,7 +1,10 @@
 Module.register("MMM-stib2", {
   defaults: {
+    pollInterval: "20000",
     apiToken: "",
-    stops: []
+    stops: [],
+    DisplayArrivalTime: "both", // Display actual arrival time beside waiting time
+    timeFormat: "24h"
   },
 
   requiresVersion: "2.1.0", // Required version of MagicMirror
@@ -22,10 +25,24 @@ Module.register("MMM-stib2", {
     this.fetchColors()
       .then(() => this.update())
       .then(() => {
-        // Schedule updates
+	// Convert pollInterval to a number if it's a string representation of a number
+	// and ensure it falls within the 20000 to 60000 range to avoid issues with the API.
+	// If not, set it to the default value (20000).
+	let validatedPollInterval = parseInt(this.config.pollInterval, 10);
+
+	// Check if the conversion result is NaN or if the value is out of the desired range
+	if (isNaN(validatedPollInterval) || validatedPollInterval < 20000 || validatedPollInterval > 60000) {
+	  validatedPollInterval = 20000; // Set to default value if out of range or not a valid number
+	  console.log("Invalid or out-of-range pollInterval configuration detected. Resetting to default (20000 ms).");
+	}
+
+	// Now we can safely populate pollInterval with the desired value
+	this.config.pollInterval = validatedPollInterval;
+
+	// Schedule updates
         setInterval(() => {
           this.update();
-        }, 20000);
+        }, this.config.pollInterval);
       });
   },
 
@@ -222,40 +239,89 @@ Module.register("MMM-stib2", {
   getTimeDiv: function(passage, currentTime) {
     const passageDiv = document.createElement("div");
     const passageTime = document.createElement("span");
-    passageTime.innerHTML = this.getTime(currentTime, passage);
-    passageDiv.classList.add("stib-times");
-    passageDiv.appendChild(passageTime);
 
-    const icon = document.createElement("span");
-    icon.classList.add("fas", "stib-time-icon");
-    passageDiv.appendChild(icon);
-
-    if (passage && passage.message) {
-      const text = passage.message.fr;
-      const symbol = this.symbols[text];
-      if (!symbol) {
-        console.log(text);
-      } else {
-        // Special case where we need to stack two icons
-        if (symbol === "bus") {
-          icon.classList.add("fa-stack");
-          const bus = document.createElement("span");
-          bus.classList.add("fas", "fa-bus", "fa-stack-1x", "stib-time-icon");
-
-          const slash = document.createElement("span");
-          slash.classList.add("fas", "fa-slash", "fa-stack-1x", "stib-time-icon");
-
-          icon.appendChild(bus);
-          icon.appendChild(slash);
-        } else {
-          icon.classList.add("fa-" + symbol);
+    // Display waiting time, arrival time, or both
+    // Maybe a switch would be more efficient than this if cycle???
+    if (this.config.DisplayArrivalTime === "true" || this.config.DisplayArrivalTime === "both") {
+        let timeString = this.getTimeString(passage, this.config.timeFormat);
+        // both is the new default value
+        if (this.config.DisplayArrivalTime === "both") {
+            let waitingTime = this.getTime(currentTime, passage);
+            // Convert waitingTime to a string if it's not - to be able to trim it.
+            waitingTime = String(waitingTime).trim();
+        if (waitingTime !== "") {
+            timeString += " (in " + waitingTime + " min)";
         }
-      }
     }
 
-    return passageDiv;
-  },
+        passageTime.innerHTML = timeString;
+  } else if (this.config.DisplayArrivalTime === "false") {
+    passageTime.innerHTML = this.getTime(currentTime, passage);
+  }
 
+  passageDiv.classList.add("stib-times");
+  passageDiv.appendChild(passageTime);
+
+  const icon = document.createElement("span");
+  icon.classList.add("fas", "stib-time-icon");
+  passageDiv.appendChild(icon);
+
+  if (passage && passage.message) {
+    const text = passage.message.fr;
+    const symbol = this.symbols[text];
+    if (!symbol) {
+      console.log(text);
+    } else {
+      // Special case where we need to stack two icons
+      if (symbol === "bus") {
+        icon.classList.add("fa-stack");
+        const bus = document.createElement("span");
+        bus.classList.add("fas", "fa-bus", "fa-stack-1x", "stib-time-icon");
+
+        const slash = document.createElement("span");
+        slash.classList.add("fas", "fa-slash", "fa-stack-1x", "stib-time-icon");
+
+        icon.appendChild(bus);
+        icon.appendChild(slash);
+      } else {
+        icon.classList.add("fa-" + symbol);
+      }
+    }
+  }
+
+  return passageDiv;
+},
+
+  formatArrivalTime: function(isoString) {
+    if (!isoString) return "";
+    const arrivalDate = new Date(isoString);
+    const hours = arrivalDate.getHours().toString().padStart(2, '0');
+    const minutes = arrivalDate.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  },
+ 
+  getTimeString: function(passage, format) {
+    if (!passage || !passage.time) {
+      return " "; // Return an empty string if passage time is undefined
+    }
+ 
+    const arrivalTime = new Date(passage.time);
+    let hours = arrivalTime.getHours();
+    let minutes = arrivalTime.getMinutes();
+ 
+    if (format === "12h") {
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // Translate '0' to '12'
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      return hours + ':' + minutes + ' ' + ampm;
+    } else {
+      // 24h format is the default
+      minutes = minutes < 10 ? '0'+minutes : minutes;
+      return hours + ':' + minutes;
+    }
+  },
+  
   getMessage: function(message, from, upTo) {
     const showMessage = false;
     const messageSpan = document.createElement("span");
